@@ -90,21 +90,24 @@ int main(void)
   MX_GPIO_Init();
   MX_USART6_UART_Init();
   MX_SPI3_Init();
+  MX_SPI2_Init();
+  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 /* USER CODE BEGIN 2 */
   TMC_Init();
-  USART6_SendString("TMC Init Done\r\n");
-
+  printf("TMC5160 Test\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {  HAL_Delay(500);
+  {  
+	  USART1_SendString("Reading TMC5160 registers...\r\n");
+	  HAL_Delay(500);
 
 	// 速度模式，正转
-  TMC_Run_Velocity(50000);
-  USART6_SendString("Motor Running...\r\n");
+	  TMC_Run_Velocity(50000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
