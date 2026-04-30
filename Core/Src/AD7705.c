@@ -49,7 +49,7 @@ uint8_t AD7705_Init(void)
     HAL_Delay(10);
 
     // 2. 时钟寄存器：4.9152MHz, CLKDIV=1, 50Hz
-    uint8_t clk_cmd[2] = {0x20, 0x0C};
+    static const uint8_t clk_cmd[2] = {0x20, 0x0C};
     AD_CS_LOW();
     HAL_SPI_Transmit(&hspi1, clk_cmd, 2, 100);
     AD_CS_HIGH();
@@ -64,7 +64,7 @@ uint8_t AD7705_Init(void)
     printf("[OK]  Clock OK\r\n");
 
     // 4. Setup：自校准 + Gain=128 + 单极
-    uint8_t setup_cmd[2] = {0x10, 0x7C};
+    static const uint8_t setup_cmd[2] = {0x10, 0x78};
     AD_CS_LOW();
     HAL_SPI_Transmit(&hspi1, setup_cmd, 2, 100);
     AD_CS_HIGH();
@@ -163,80 +163,107 @@ float AD7705_ReadWeightKg(void)
     uint16_t filtered = AD7705_Filter(raw);
     return AD7705_RawToKg(filtered);
 }
-
-// ─── 测试主函数 ──────────────────────────────
-void AD7705_TensionTest(void)
+// ─── 非阻塞读取 ADC 原始值 ──────────────────────────
+// DRDY 未就绪时直接返回 0xFFFF，不等待
+uint16_t AD7705_TryReadData(void)
 {
-    printf("====== RAW DEBUG ======\r\n");
-
-    // 复位
-    uint8_t reset = 0xFF;
-    AD_CS_LOW();
-    for (int i = 0; i < 4; i++) HAL_SPI_Transmit(&hspi1, &reset, 1, 100);
-    AD_CS_HIGH();
-    HAL_Delay(10);
-
-    // 时钟
-    uint8_t clk_cmd[2] = {0x20, 0x0C};
-    AD_CS_LOW();
-    HAL_SPI_Transmit(&hspi1, clk_cmd, 2, 100);
-    AD_CS_HIGH();
-    HAL_Delay(50);
-
-    // 验证时钟
-    uint8_t clk_val = AD7705_ReadReg(0x28);
-    printf("Clock reg = 0x%02X (expect 0x0C)\r\n", clk_val);
-
-    // ★ 先用 Gain=1 双极，最宽量程，排除截断问题
-    // 0x10 = 写CH1 Setup
-    // 0x40 = 自校准 + Gain=1 + 双极
-    uint8_t setup_cmd[2] = {0x10, 0x40};
-    AD_CS_LOW();
-    HAL_SPI_Transmit(&hspi1, setup_cmd, 2, 100);
-    AD_CS_HIGH();
-
-    // 等自校准
-    printf("Waiting self-cal...\r\n");
-    uint32_t t0 = HAL_GetTick();
-    while (AD_DRDY() == GPIO_PIN_SET) {
-        if (HAL_GetTick() - t0 > 5000) {
-            printf("Self-cal TIMEOUT\r\n");
-            return;
-        }
+    if (AD_DRDY() != GPIO_PIN_RESET) {
+        return 0xFFFF;
     }
-    printf("Self-cal OK %lu ms\r\n", HAL_GetTick() - t0);
 
-    // 读数
-    uint32_t cnt = 0;
-    while (1) {
-        // 等 DRDY
-        t0 = HAL_GetTick();
-        while (AD_DRDY() == GPIO_PIN_SET) {
-            if (HAL_GetTick() - t0 > 1000) {
-                printf("DRDY timeout\r\n");
-                goto end;
-            }
-        }
+    uint8_t cmd   = 0x38;
+    uint8_t rx[2] = {0};
+    AD_CS_LOW();
+    HAL_SPI_Transmit(&hspi1, &cmd, 1, 100);
+    HAL_SPI_Receive(&hspi1, rx, 2, 100);
+    AD_CS_HIGH();
 
-        uint8_t cmd   = 0x38;
-        uint8_t rx[2] = {0};
-        AD_CS_LOW();
-        HAL_SPI_Transmit(&hspi1, &cmd, 1, 100);
-        HAL_SPI_Receive(&hspi1, rx, 2, 100);
-        AD_CS_HIGH();
-
-        uint16_t raw = (uint16_t)(rx[0] << 8 | rx[1]);
-
-        // 双极解读：0x8000=0V
-        int16_t signed_raw = (int16_t)(raw - 0x8000);
-        // Gain=1 双极：满量程 = VREF = 2500mV
-        float mv = (float)signed_raw / 32768.0f * 2500.0f;
-
-        printf("[%04lu] RAW=0x%04X (%5u)  Signed=%-6d  Vmv=%.2f\r\n",
-               cnt, raw, raw, signed_raw, mv);
-
-        cnt++;
-        HAL_Delay(200);
-    }
-    end:;
+    return (uint16_t)(rx[0] << 8 | rx[1]);
 }
+
+// ─── 非阻塞读取重量（kg）────────────────────────────
+// 返回 -1.0f 表示本次 DRDY 未就绪，无新数据
+float AD7705_TryReadWeightKg(void)
+{
+    uint16_t raw = AD7705_TryReadData();
+    if (raw == 0xFFFF) return -1.0f;
+
+    uint16_t filtered = AD7705_Filter(raw);
+    return AD7705_RawToKg(filtered);
+}
+//// ─── 测试主函数 ──────────────────────────────
+//void AD7705_TensionTest(void)
+//{
+//    printf("====== RAW DEBUG ======\r\n");
+
+//    // 复位
+//    uint8_t reset = 0xFF;
+//    AD_CS_LOW();
+//    for (int i = 0; i < 4; i++) HAL_SPI_Transmit(&hspi1, &reset, 1, 100);
+//    AD_CS_HIGH();
+//    HAL_Delay(10);
+
+//    // 时钟
+//    static uint8_t clk_cmd[2] = {0x20, 0x0C};
+//    AD_CS_LOW();
+//    HAL_SPI_Transmit(&hspi1, clk_cmd, 2, 100);
+//    AD_CS_HIGH();
+//    HAL_Delay(50);
+
+//    // 验证时钟
+//    uint8_t clk_val = AD7705_ReadReg(0x28);
+//    printf("Clock reg = 0x%02X (expect 0x0C)\r\n", clk_val);
+
+//    // ★ 先用 Gain=1 双极，最宽量程，排除截断问题
+//    // 0x10 = 写CH1 Setup
+//    // 0x40 = 自校准 + Gain=1 + 双极
+//    static uint8_t setup_cmd[2] = {0x10, 0x40};
+//    AD_CS_LOW();
+//    HAL_SPI_Transmit(&hspi1, setup_cmd, 2, 100);
+//    AD_CS_HIGH();
+
+//    // 等自校准
+//    printf("Waiting self-cal...\r\n");
+//    uint32_t t0 = HAL_GetTick();
+//    while (AD_DRDY() == GPIO_PIN_SET) {
+//        if (HAL_GetTick() - t0 > 5000) {
+//            printf("Self-cal TIMEOUT\r\n");
+//            return;
+//        }
+//    }
+//    printf("Self-cal OK %lu ms\r\n", HAL_GetTick() - t0);
+
+//    // 读数
+//    uint32_t cnt = 0;
+//    while (1) {
+//        // 等 DRDY
+//        t0 = HAL_GetTick();
+//        while (AD_DRDY() == GPIO_PIN_SET) {
+//            if (HAL_GetTick() - t0 > 1000) {
+//                printf("DRDY timeout\r\n");
+//                goto end;
+//            }
+//        }
+
+//        uint8_t cmd   = 0x38;
+//        uint8_t rx[2] = {0};
+//        AD_CS_LOW();
+//        HAL_SPI_Transmit(&hspi1, &cmd, 1, 100);
+//        HAL_SPI_Receive(&hspi1, rx, 2, 100);
+//        AD_CS_HIGH();
+
+//        uint16_t raw = (uint16_t)(rx[0] << 8 | rx[1]);
+
+//        // 双极解读：0x8000=0V
+//        int16_t signed_raw = (int16_t)(raw - 0x8000);
+//        // Gain=1 双极：满量程 = VREF = 2500mV
+//        float mv = (float)signed_raw / 32768.0f * 2500.0f;
+
+//        printf("[%04lu] RAW=0x%04X (%5u)  Signed=%-6d  Vmv=%.2f\r\n",
+//               cnt, raw, raw, signed_raw, mv);
+
+//        cnt++;
+//        HAL_Delay(200);
+//    }
+//    end:;
+//}

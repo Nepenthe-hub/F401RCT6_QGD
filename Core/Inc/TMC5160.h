@@ -47,15 +47,6 @@
 //驱动寄存器组(0X6C…0X7F)
 #define TMC5160_PWMCONF     0x70// PWM 配置寄存器，控制 PWM 模式和频率
 
-// ======================================================
-// 硬件引脚宏定义
-// PC5 是我们在 CubeMX 里配置的驱动使能引脚 (低电平使能)
-// ======================================================
-#define pTMC_DRV_ENN(state) HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, state)
-
-// 3. 电流与模式动态调节 (Power & Mode)
-
-
 void TMC_Enable_StealthChop(uint8_t enable); // 动态切换静音模式
 
 // 4. 运动控制 API

@@ -4,6 +4,7 @@
 #include "main.h"
 // AD7705.h 里加一行
 #define ADC_BIPOLAR  1   // 1=双极模式，0=单极模式
+
 // ─── 引脚定义 ───────────────────────────────
 #define AD_CS_LOW()   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET)
 #define AD_CS_HIGH()  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET)
@@ -31,6 +32,8 @@ uint16_t AD7705_ReadData(void);
 void     AD7705_Tare(void);
 float    AD7705_RawToKg(uint16_t raw);
 float    AD7705_ReadWeightKg(void);
-void     AD7705_TensionTest(void);
+uint16_t AD7705_TryReadData(void);
+float    AD7705_TryReadWeightKg(void);
+//void     AD7705_TensionTest(void);
 
 #endif

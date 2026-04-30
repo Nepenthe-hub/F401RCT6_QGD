@@ -8,9 +8,14 @@
                 "e:\\MyFile\\F401RCT6_QGD\\Drivers\\STM32F4xx_HAL_Driver\\Inc\\Legacy",
                 "e:\\MyFile\\F401RCT6_QGD\\Drivers\\CMSIS\\Device\\ST\\STM32F4xx\\Include",
                 "e:\\MyFile\\F401RCT6_QGD\\Drivers\\CMSIS\\Include",
+                "e:\\MyFile\\F401RCT6_QGD\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+                "e:\\MyFile\\F401RCT6_QGD\\Middlewares\\Third_Party\\FreeRTOS\\Source\\CMSIS_RTOS_V2",
+                "e:\\MyFile\\F401RCT6_QGD\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM4F",
                 "e:\\MyFile\\F401RCT6_QGD\\MDK-ARM",
                 "e:\\MyFile\\F401RCT6_QGD\\Core\\Src",
-                "e:\\MyFile\\F401RCT6_QGD\\Drivers\\STM32F4xx_HAL_Driver\\Src"
+                "e:\\MyFile\\F401RCT6_QGD\\Drivers\\STM32F4xx_HAL_Driver\\Src",
+                "e:\\MyFile\\F401RCT6_QGD\\Middlewares\\Third_Party\\FreeRTOS\\Source",
+                "e:\\MyFile\\F401RCT6_QGD\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\MemMang"
             ],
             "defines": [
                 "USE_HAL_DRIVER",

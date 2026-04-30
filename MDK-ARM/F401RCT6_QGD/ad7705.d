@@ -30,6 +30,8 @@ f401rct6_qgd\ad7705.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_r
 f401rct6_qgd\ad7705.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 f401rct6_qgd\ad7705.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 f401rct6_qgd\ad7705.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
+f401rct6_qgd\ad7705.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
+f401rct6_qgd\ad7705.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 f401rct6_qgd\ad7705.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 f401rct6_qgd\ad7705.o: ../Core/Inc/AD7705.h
 f401rct6_qgd\ad7705.o: D:\keil_5\ARM\ARMCC\Bin\..\include\stdio.h
