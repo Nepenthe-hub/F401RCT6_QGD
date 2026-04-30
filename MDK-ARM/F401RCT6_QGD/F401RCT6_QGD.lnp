@@ -1,6 +1,7 @@
 --cpu=Cortex-M4.fp
 "f401rct6_qgd\startup_stm32f401xc.o"
 "f401rct6_qgd\tmc5160.o"
+"f401rct6_qgd\ad7705.o"
 "f401rct6_qgd\main.o"
 "f401rct6_qgd\gpio.o"
 "f401rct6_qgd\spi.o"

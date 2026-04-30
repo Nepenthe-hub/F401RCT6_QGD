@@ -396,6 +396,11 @@
               <FilePath>..\Core\Src\TMC5160.c</FilePath>
             </File>
             <File>
+              <FileName>AD7705.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\AD7705.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/main.c</FilePath>

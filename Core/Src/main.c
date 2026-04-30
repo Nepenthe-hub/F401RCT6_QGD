@@ -25,6 +25,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "TMC5160.h"
+#include "AD7705.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -93,21 +94,25 @@ int main(void)
   MX_SPI2_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-/* USER CODE BEGIN 2 */
   TMC_Init();
-  printf("TMC5160 Test\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  /*********************TMC5160≤‚ ‘*******************************/
+  //TMC_Run_Velocity(2000);
+  /*********************AD7705≤‚ ‘********************************/
+  AD7705_TensionTest();
   while (1)
-  {  
-	  USART1_SendString("Reading TMC5160 registers...\r\n");
-	  HAL_Delay(500);
+  {
+/*********************TMC5160≤‚ ‘*******************************/
+	 // int32_t vel = TMC_Get_Velocity();
+    // int32_t pos = TMC_Get_Position();
+    // printf("VEL:%ld POS:%ld\r\n", vel, pos);
+    // HAL_Delay(500);
 
-	// ÈÄüÂ∫¶Ê®°ÂºèÔºåÊ≠£ËΩ¨
-	  TMC_Run_Velocity(50000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

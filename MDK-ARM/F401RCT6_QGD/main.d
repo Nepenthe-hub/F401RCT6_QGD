@@ -36,3 +36,4 @@ f401rct6_qgd\main.o: D:\keil_5\ARM\ARMCC\Bin\..\include\stdio.h
 f401rct6_qgd\main.o: D:\keil_5\ARM\ARMCC\Bin\..\include\string.h
 f401rct6_qgd\main.o: ../Core/Inc/gpio.h
 f401rct6_qgd\main.o: ../Core/Inc/TMC5160.h
+f401rct6_qgd\main.o: ../Core/Inc/AD7705.h
